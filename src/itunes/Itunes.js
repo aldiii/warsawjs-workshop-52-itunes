@@ -1,66 +1,99 @@
 import {
     Button,
-    Input,
+    CircularProgress,
+    Input, 
     Stack,
-    Table,
-    Thead,
-    Tbody,
-    Image,
-    Tfoot,
-    Tr,
-    Th,
-    Td,
-    TableCaption,
+    Tag,
 } from '@chakra-ui/react';
-
-import { useEffect } from 'react';
-import { useState } from 'react/cjs/react.development';
+import { useEffect,useState } from 'react';
+import {useDebounce} from "../hooks";
+import {ItunesTable} from "../itunesTable";
 
 // https://itunes.apple.com/search?term=harry&entity=ebook
 
+async function fetchBooks({ searchTermInput, setResults, setIsLoading }) {
+    if (searchTermInput === '') {
+        return;
+    }
+
+    setIsLoading(true);
+    try {
+        const response = await fetch(
+            `https://itunes.apple.com/search?term=${encodeURIComponent(
+                searchTermInput
+            )}&entity=ebook`
+        );
+        const data = await response.json();
+
+        setResults(data.results);
+    } finally {
+        setIsLoading(false);
+    }
+}
+
+const words = ['paris', 'barcelona', 'berlin', 'tokyo', 'rome'];
+function getSuggestions(searchTerm) {
+    if (!searchTerm) {
+        return [];
+    }
+    return words.filter((word) => word.startsWith(searchTerm));
+}
+
 export function Itunes() {
     const [results, setResults] = useState([]);
-    useEffect(() => {
-        (async () => {
-            const searchTerm = 'abc';
-            const response = await fetch(
-                `https://itunes.apple.com/search?term=${encodeURIComponent(
-                    searchTerm
-                )}&entity=ebook`
-            );
-            const data = await response.json();
+    const [searchTermInput, setSearchTermInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
 
-            setResults(data.results);
-        })();
-    }, []);
+    const debouncedSearchTerm = useDebounce(searchTermInput,500);
+
+    useEffect(() => {
+        fetchBooks({
+            searchTermInput: debouncedSearchTerm,
+            setResults,
+            setIsLoading,
+        });
+    }, [debouncedSearchTerm]);
+
+    const suggestionsForInput = getSuggestions(searchTermInput);
+    useEffect(() => {
+        setSuggestions(suggestionsForInput);
+    }, [suggestionsForInput.join('')]); 
 
     return (
         <Stack>
             <Stack direction="row">
-                <Input />
-                <Button colorScheme="blue">Search</Button>
+                <Input
+                    value={searchTermInput}
+                    onChange={(event) => setSearchTermInput(event.target.value)}
+                />
+                 {isLoading && (
+                    <CircularProgress
+                        isIndeterminate
+                        color="green.300"
+                        size={10}
+                    />
+                )}
+                <Button
+                    colorScheme="blue"
+                    onClick={() =>
+                        fetchBooks({
+                            searchTermInput,
+                            setResults,
+                            setIsLoading,
+                        })
+                    }
+                >
+                    Search
+                </Button>
             </Stack>
-            <Table variant="simple">
-                <TableCaption>iTunes Ebooks</TableCaption>
-                <Thead>
-                    <Tr>
-                        <Th>Artwork</Th>
-                        <Th>Name</Th>
-                        <Th isNumeric>Price</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {results.map((result) => (
-                        <Tr>
-                            <Td>
-                                <Image src={result.artworkUrl60} />
-                            </Td>
-                            <Td>{result.trackName}</Td>
-                            <Td isNumeric>{result.price}</Td>
-                        </Tr>
-                    ))}
-                </Tbody>
-            </Table>
+            <Stack direction="row">
+                {suggestions.map((suggestion) => (
+                    <Tag key={suggestion}>{suggestion}</Tag>
+                ))}
+            </Stack>
+            <ItunesTable results={results|| []} />
         </Stack>
     );
 }
+
