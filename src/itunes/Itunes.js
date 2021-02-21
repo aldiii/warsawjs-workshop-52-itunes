@@ -1,13 +1,7 @@
-import {
-    Button,
-    CircularProgress,
-    Input, 
-    Stack,
-    Tag,
-} from '@chakra-ui/react';
-import { useEffect,useState } from 'react';
-import {useDebounce} from "../hooks";
-import {ItunesTable} from "../itunesTable";
+import { Button, CircularProgress, Input, Stack, Tag } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { useDebounce } from '../hooks';
+import { ItunesTable } from '../itunesTable';
 
 // https://itunes.apple.com/search?term=harry&entity=ebook
 
@@ -45,7 +39,7 @@ export function Itunes() {
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
 
-    const debouncedSearchTerm = useDebounce(searchTermInput,500);
+    const debouncedSearchTerm = useDebounce(searchTermInput, 500);
 
     useEffect(() => {
         fetchBooks({
@@ -58,7 +52,7 @@ export function Itunes() {
     const suggestionsForInput = getSuggestions(searchTermInput);
     useEffect(() => {
         setSuggestions(suggestionsForInput);
-    }, [suggestionsForInput.join('')]); 
+    }, [suggestionsForInput.join('')]);
 
     return (
         <Stack>
@@ -67,7 +61,7 @@ export function Itunes() {
                     value={searchTermInput}
                     onChange={(event) => setSearchTermInput(event.target.value)}
                 />
-                 {isLoading && (
+                {isLoading && (
                     <CircularProgress
                         isIndeterminate
                         color="green.300"
@@ -92,8 +86,7 @@ export function Itunes() {
                     <Tag key={suggestion}>{suggestion}</Tag>
                 ))}
             </Stack>
-            <ItunesTable results={results|| []} />
+            <ItunesTable results={results || []} />
         </Stack>
     );
 }
-

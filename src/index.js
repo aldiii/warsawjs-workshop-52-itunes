@@ -7,10 +7,9 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 ReactDOM.render(
     <React.StrictMode>
-        <ChakraProvider>
-        <App />
+        <ChakraProvider bgGradient="linear(to-r, green.200, pink.500)">
+            <App />
         </ChakraProvider>
-        
     </React.StrictMode>,
     document.getElementById('root')
 );

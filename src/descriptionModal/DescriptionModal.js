@@ -1,6 +1,7 @@
 import {
     Button,
     Flex,
+    Heading,
     Link,
     Tag,
     Text,
@@ -13,7 +14,7 @@ import {
     ModalCloseButton,
     useDisclosure,
     Wrap,
-    WrapItem
+    WrapItem,
 } from '@chakra-ui/react';
 
 export function DescriptionModal({ result }) {
@@ -29,21 +30,42 @@ export function DescriptionModal({ result }) {
                     <ModalHeader>{result.trackName}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Text dangerouslySetInnerHTML={{ __html: result.description }}></Text>
-                        <Link  mt={3} href={result.trackViewUrl} color="blue" mt={5}>Go to the store</Link>
-                        {result.genres ? (<Wrap mt={2}>
-                        {result.genres.map(
-                            (genre,index)=> <WrapItem key={index}><Tag size="md" >{genre}</Tag></WrapItem>)}
-                        </Wrap>) : null}
-                        
+                        <Heading mt={2} mb={2} size="md">
+                            Author:
+                        </Heading>
+                        <Text>{result.artistName}</Text>
+                        <Heading mt={2} mb={2} size="md">
+                            Description:
+                        </Heading>
+                        <Text
+                            dangerouslySetInnerHTML={{
+                                __html: result.description,
+                            }}
+                        ></Text>
+                        <Link
+                            mt={3}
+                            href={result.trackViewUrl}
+                            color="blue"
+                            mt={5}
+                        >
+                            Go to the store
+                        </Link>
+                        {result.genres ? (
+                            <Wrap mt={2}>
+                                {result.genres.map((genre, index) => (
+                                    <WrapItem key={index}>
+                                        <Tag size="md">{genre}</Tag>
+                                    </WrapItem>
+                                ))}
+                            </Wrap>
+                        ) : null}
                     </ModalBody>
                     <ModalFooter>
                         <Flex>
-                        <Button colorScheme="blue" onClick={onClose}>
-                            Close
-                        </Button>
+                            <Button colorScheme="blue" onClick={onClose}>
+                                Close
+                            </Button>
                         </Flex>
-                        
                     </ModalFooter>
                 </ModalContent>
             </Modal>

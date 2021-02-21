@@ -20,7 +20,7 @@ function App() {
     return (
         <div className={styles['App']}>
             <header className={styles['App-header']}>
-                <Itunes/>
+                <Itunes />
             </header>
         </div>
     );
